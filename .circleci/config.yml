@@ -1,0 +1,43 @@
+version: 2
+jobs:
+  test-unit:
+    docker:
+      - image: circleci/golang:1.13.1
+    working_directory: /go/src/github.com/checkr/states-language-cadence
+    steps:
+      - checkout
+      - run: "make mod-vendor-unpack test-unit"
+  test-integration:
+    docker:
+      - image: circleci/golang:1.13.1
+      - image: postgres:9.6
+        environment:
+          POSTGRES_PASSWORD: test
+          POSTGRES_USER: test
+          POSTGRES_DB: test
+    working_directory: /go/src/github.com/checkr/states-language-cadence
+    steps:
+      - checkout
+      - run: "make mod-vendor-unpack test-integration"
+  test-lint:
+    docker:
+      - image: circleci/golang:1.13.1
+    working_directory: /go/src/github.com/checkr/states-language-cadence
+    steps:
+      - checkout
+      - run: "curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.19.1"
+      - run: "make mod-vendor-unpack lint"
+  build-docker:
+    # Make sure the docker image is built properly.
+    machine: true
+    steps:
+      - checkout
+      - run: "make docker"
+workflows:
+  version: 2
+  test:
+    jobs:
+      - build-docker
+      - test-unit
+      - test-integration
+      - test-lint

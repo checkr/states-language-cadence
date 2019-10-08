@@ -1,0 +1,21 @@
+linters:
+  disable-all: true
+  enable:
+    - gofmt
+    - golint
+    - goimports
+    - govet
+    - deadcode
+    - errcheck
+    - gosimple
+    - ineffassign
+    - staticcheck
+    - structcheck
+    - typecheck
+    - unused
+    - varcheck
+    - goconst
+    - unconvert
+
+run:
+  modules-download-mode: vendor
