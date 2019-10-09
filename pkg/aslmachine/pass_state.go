@@ -39,7 +39,11 @@ func (s *PassState) Execute(ctx workflow.Context, input interface{}) (output int
 }
 
 func (s *PassState) process(ctx workflow.Context, input interface{}) (output interface{}, next *string, err error) {
-	return s.Result, nextState(s.Next, s.End), nil
+	output = input
+	if s.Result != nil {
+		output = s.Result
+	}
+	return output, nextState(s.Next, s.End), nil
 }
 
 func (s *PassState) Validate() error {

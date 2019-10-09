@@ -123,8 +123,6 @@ func (m *StateMachine) Execute(ctx workflow.Context, input interface{}) (interfa
 	nextState := &m.StartAt
 
 	for {
-		fmt.Printf("Executing: %v %v\n", *nextState, input)
-
 		output, next, err := m.States[*nextState].Execute(ctx, input)
 
 		if err != nil {
@@ -132,12 +130,10 @@ func (m *StateMachine) Execute(ctx workflow.Context, input interface{}) (interfa
 		}
 
 		if next == nil {
-			break
+			return output, nil
 		}
 
 		nextState = next
 		input = output
 	}
-
-	return input, nil
 }

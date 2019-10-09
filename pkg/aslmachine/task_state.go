@@ -39,9 +39,6 @@ type TaskState struct {
 //}
 
 func (s *TaskState) process(ctx workflow.Context, input interface{}) (interface{}, *string, error) {
-
-	fmt.Printf("-- Task Executing: %v %v %v\n", *s.name, *s.Resource, input)
-
 	var result interface{}
 	err := workflow.ExecuteActivity(ctx, "ResourceActivity", *s.Resource, input).Get(ctx, &result)
 	if err != nil {
