@@ -2,7 +2,7 @@ package aslworkflow
 
 import "github.com/checkr/states-language-cadence/pkg/aslmachine"
 
-var machine = []byte(`
+var passMachine = []byte(`
 {
   "StartAt": "Example1",
   "States": {
@@ -22,7 +22,7 @@ var machine = []byte(`
 `)
 
 func (s *UnitTestSuite) Test_Workflow_Pass_State() {
-	sm, err := aslmachine.FromJSON(machine)
+	sm, err := aslmachine.FromJSON(passMachine)
 	if err != nil {
 		s.NoError(err)
 		return
@@ -30,9 +30,9 @@ func (s *UnitTestSuite) Test_Workflow_Pass_State() {
 
 	exampleInput := map[string]interface{}{"test": "example_input"}
 
-	RegisterWorkflow("TestWorkflow", *sm)
+	RegisterWorkflow("TestPassWorkflow", *sm)
 
-	s.env.ExecuteWorkflow("TestWorkflow", exampleInput)
+	s.env.ExecuteWorkflow("TestPassWorkflow", exampleInput)
 
 	s.True(s.env.IsWorkflowCompleted())
 	s.NoError(s.env.GetWorkflowError())

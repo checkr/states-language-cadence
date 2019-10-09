@@ -5,6 +5,7 @@ import (
 
 	"github.com/coinbase/step/utils/is"
 	"github.com/coinbase/step/utils/to"
+	"go.uber.org/cadence"
 	"go.uber.org/cadence/workflow"
 )
 
@@ -19,7 +20,9 @@ type FailState struct {
 }
 
 func (s *FailState) Execute(_ workflow.Context, input interface{}) (output interface{}, next *string, err error) {
-	return errorOutput(s.Error, s.Cause), nil, fmt.Errorf("Fail")
+	return nil, nil, cadence.NewCustomError(
+		"Fail",
+		errorOutput(s.Error, s.Cause))
 }
 
 func (s *FailState) Validate() error {
