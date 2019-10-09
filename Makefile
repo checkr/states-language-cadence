@@ -1,7 +1,7 @@
 GO=go
 GO_BUILD_OPTS?=
 
-export GOPRIVATE="github.com/checkr"
+export GOPRIVATE=github.com/checkr
 
 # Test options. -count 1 disables test result caching.
 GO_TEST_OPTS?=-v --race -count 1
