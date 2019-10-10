@@ -3,7 +3,7 @@ package aslmachine
 import (
 	"fmt"
 
-	"github.com/coinbase/step/jsonpath"
+	"github.com/checkr/states-language-cadence/pkg/jsonpath"
 	"github.com/coinbase/step/utils/to"
 	"go.uber.org/cadence/workflow"
 )
@@ -62,7 +62,7 @@ func (s *ParallelState) process(ctx workflow.Context, input interface{}) (interf
 		}
 	}
 
-	return resp, nextState(s.Next, s.End), nil
+	return interface{}(resp), nextState(s.Next, s.End), nil
 }
 
 func (s *ParallelState) Execute(ctx workflow.Context, input interface{}) (interface{}, *string, error) {
@@ -104,14 +104,12 @@ func (m *Branch) Execute(ctx workflow.Context, s ParallelState, input interface{
 		}
 
 		if next == nil || *next == "" {
-			break
+			return output, nil, nil
 		}
 
 		nextState = next
 		input = output
 	}
-
-	return input, nil, nil
 }
 
 func (s *ParallelState) Validate() error {
