@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/coinbase/step/jsonpath"
+	"github.com/checkr/states-language-cadence/pkg/jsonpath"
 	"github.com/coinbase/step/utils/to"
 	"go.uber.org/cadence/workflow"
 )

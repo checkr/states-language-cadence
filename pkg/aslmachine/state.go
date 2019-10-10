@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/coinbase/step/jsonpath"
+	"github.com/checkr/states-language-cadence/pkg/jsonpath"
 	"github.com/coinbase/step/utils/is"
 	"github.com/coinbase/step/utils/to"
 	"github.com/pkg/errors"
