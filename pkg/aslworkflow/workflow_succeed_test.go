@@ -2,27 +2,19 @@ package aslworkflow
 
 import "github.com/checkr/states-language-cadence/pkg/aslmachine"
 
-var passMachine = []byte(`
+var succeedMachine = []byte(`
 {
 	"StartAt": "Example1",
 	"States": {
 		"Example1": {
-			"Type": "Pass",
-			"Next": "Example2"
-		},
-		"Example2": {
-			"Type": "Pass",
-			"Result": {
-				"test": "example_output"
-			},
-			"End": true
+			"Type": "Succeed"
 		}
 	}
 }
 `)
 
-func (s *UnitTestSuite) Test_Workflow_Pass_State() {
-	sm, err := aslmachine.FromJSON(passMachine)
+func (s *UnitTestSuite) Test_Workflow_Succeed_State() {
+	sm, err := aslmachine.FromJSON(succeedMachine)
 	if err != nil {
 		s.NoError(err)
 		return
@@ -30,9 +22,9 @@ func (s *UnitTestSuite) Test_Workflow_Pass_State() {
 
 	exampleInput := map[string]interface{}{"test": "example_input"}
 
-	RegisterWorkflow("TestPassWorkflow", *sm)
+	RegisterWorkflow("TestSucceedWorkflow", *sm)
 
-	s.env.ExecuteWorkflow("TestPassWorkflow", exampleInput)
+	s.env.ExecuteWorkflow("TestSucceedWorkflow", exampleInput)
 
 	s.True(s.env.IsWorkflowCompleted())
 	s.NoError(s.env.GetWorkflowError())
@@ -41,5 +33,5 @@ func (s *UnitTestSuite) Test_Workflow_Pass_State() {
 	err = s.env.GetWorkflowResult(&result)
 	s.NoError(err)
 
-	s.Equal("example_output", result["test"])
+	s.Equal("example_input", result["test"])
 }

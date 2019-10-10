@@ -29,7 +29,6 @@ type WaitState struct {
 }
 
 func (s *WaitState) process(ctx workflow.Context, input interface{}) (interface{}, *string, error) {
-
 	var duration time.Duration
 
 	if s.SecondsPath != nil {
@@ -49,11 +48,11 @@ func (s *WaitState) process(ctx workflow.Context, input interface{}) (interface{
 		if err != nil {
 			return nil, nil, err
 		}
-		now := time.Now()
+		now := workflow.Now(ctx).UTC()
 		duration = ts.Sub(now)
 
 	} else if s.Timestamp != nil {
-		now := time.Now().UTC()
+		now := workflow.Now(ctx).UTC()
 		duration = s.Timestamp.Sub(now)
 	}
 
