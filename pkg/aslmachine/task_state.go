@@ -1,6 +1,7 @@
 package aslmachine
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/checkr/states-language-cadence/pkg/jsonpath"
@@ -24,9 +25,6 @@ type TaskState struct {
 	Catch []*Catcher `json:",omitempty"`
 	Retry []*Retrier `json:",omitempty"`
 
-	// Maps a Lambda Handler Function
-	TaskHandler interface{} `json:"-"`
-
 	Next *string `json:",omitempty"`
 	End  *bool   `json:",omitempty"`
 
@@ -34,18 +32,18 @@ type TaskState struct {
 	HeartbeatSeconds int `json:",omitempty"`
 }
 
-//func (s *TaskState) SetTaskHandler(resourcefn interface{}) {
-//	s.TaskHandler = resourcefn
-//}
+var ErrTaskHandlerNotRegistered = errors.New("handler has not been registered")
 
 func (s *TaskState) process(ctx workflow.Context, input interface{}) (interface{}, *string, error) {
-	var result interface{}
-	err := workflow.ExecuteActivity(ctx, "ResourceActivity", *s.Resource, input).Get(ctx, &result)
-	if err != nil {
-		return nil, nil, err
+	if globalTaskHandler != nil {
+		result, err := globalTaskHandler(ctx, *s.Resource, input)
+		if err != nil {
+			return nil, nil, err
+		}
+		return result, nextState(s.Next, s.End), nil
 	}
 
-	return result, nextState(s.Next, s.End), nil
+	return nil, nil, ErrTaskHandlerNotRegistered
 }
 
 // Input must include the Task name in $.Task
@@ -70,11 +68,11 @@ func (s *TaskState) Validate() error {
 	s.SetType(to.Strp("Task"))
 
 	if err := ValidateNameAndType(s); err != nil {
-		return fmt.Errorf("%v %v", errorPrefix(s), err)
+		return fmt.Errorf("%v %w", errorPrefix(s), err)
 	}
 
 	if err := isEndValid(s.Next, s.End); err != nil {
-		return fmt.Errorf("%v %v", errorPrefix(s), err)
+		return fmt.Errorf("%v %w", errorPrefix(s), err)
 	}
 
 	if s.Resource == nil {
@@ -82,7 +80,7 @@ func (s *TaskState) Validate() error {
 	}
 
 	// TODO: implement custom handlers
-	//if s.TaskHandler != nil {
+	//if s.taskHandler != nil {
 	//}
 
 	if err := isCatchValid(s.Catch); err != nil {
@@ -102,4 +100,17 @@ func (s *TaskState) SetType(t *string) {
 
 func (s *TaskState) GetType() *string {
 	return s.Type
+}
+
+type TaskHandler func(ctx workflow.Context, resource string, input interface{}) (interface{}, error)
+
+var globalTaskHandler TaskHandler
+
+// RegisterHandler registers a global handler for tasks. The implementation is left up to importers of this package.
+func RegisterHandler(taskHandlerFunc TaskHandler) {
+	globalTaskHandler = taskHandlerFunc
+}
+
+func DeregisterHandler() {
+	globalTaskHandler = nil
 }

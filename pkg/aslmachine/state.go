@@ -161,7 +161,7 @@ func processError(s State, execution Execution) Execution {
 		output, next, err := execution(ctx, input)
 
 		if err != nil {
-			return nil, nil, fmt.Errorf("%v %v", errorPrefix(s), err.Error())
+			return nil, nil, fmt.Errorf("%v %w", errorPrefix(s), err)
 		}
 		return output, next, nil
 	}
