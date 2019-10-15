@@ -7,6 +7,8 @@ import (
 	"go.uber.org/cadence/testsuite"
 )
 
+// This is used to set up a test suite for running workflow tests
+
 type UnitTestSuite struct {
 	suite.Suite
 	testsuite.WorkflowTestSuite

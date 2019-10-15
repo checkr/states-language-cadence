@@ -4,14 +4,10 @@ import (
 	"context"
 
 	"go.uber.org/cadence/activity"
-	"go.uber.org/zap"
 )
 
-// Activity is the activity that Workflow runs
-func Activity(ctx context.Context, resource string, input interface{}) (interface{}, error) {
-	logger := activity.GetLogger(ctx)
+type Activity func(ctx context.Context, input interface{}) (interface{}, error)
 
-	logger.Info("executing activity", zap.Any("input", input), zap.Any("resource", resource))
-
-	return input, nil
+func RegisterActivity(activityName string, activityFunc Activity) {
+	activity.RegisterWithOptions(activityFunc, activity.RegisterOptions{Name: activityName})
 }

@@ -1,4 +1,4 @@
-package aslmachine
+package aslworkflow
 
 import (
 	"fmt"

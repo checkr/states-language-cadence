@@ -1,7 +1,5 @@
 package aslworkflow
 
-import "github.com/checkr/states-language-cadence/pkg/aslmachine"
-
 var succeedMachine = []byte(`
 {
 	"StartAt": "Example1",
@@ -14,7 +12,7 @@ var succeedMachine = []byte(`
 `)
 
 func (s *UnitTestSuite) Test_Workflow_Succeed_State() {
-	sm, err := aslmachine.FromJSON(succeedMachine)
+	sm, err := FromJSON(succeedMachine)
 	if err != nil {
 		s.NoError(err)
 		return

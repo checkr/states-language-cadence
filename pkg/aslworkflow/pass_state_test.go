@@ -1,7 +1,5 @@
 package aslworkflow
 
-import "github.com/checkr/states-language-cadence/pkg/aslmachine"
-
 var passMachine = []byte(`
 {
 	"StartAt": "Example1",
@@ -22,7 +20,7 @@ var passMachine = []byte(`
 `)
 
 func (s *UnitTestSuite) Test_Workflow_Pass_State() {
-	sm, err := aslmachine.FromJSON(passMachine)
+	sm, err := FromJSON(passMachine)
 	if err != nil {
 		s.NoError(err)
 		return

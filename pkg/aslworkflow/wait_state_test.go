@@ -3,8 +3,6 @@ package aslworkflow
 import (
 	"fmt"
 	"time"
-
-	"github.com/checkr/states-language-cadence/pkg/aslmachine"
 )
 
 var waitMachine = []byte(`
@@ -50,7 +48,7 @@ func (s *UnitTestSuite) Test_Workflow_Wait_State() {
 
 	waitMachine = []byte(fmt.Sprintf(string(waitMachine), inlineTime))
 
-	sm, err := aslmachine.FromJSON(waitMachine)
+	sm, err := FromJSON(waitMachine)
 	if err != nil {
 		s.NoError(err)
 		return

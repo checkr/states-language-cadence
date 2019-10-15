@@ -1,4 +1,4 @@
-package aslmachine
+package aslworkflow
 
 import (
 	"fmt"
@@ -95,9 +95,12 @@ func (m *Branch) Execute(ctx workflow.Context, s ParallelState, input interface{
 	nextState := &m.StartAt
 
 	for {
-		// TODO: check to make sure next state exists
+		s := m.States[*nextState]
+		if s == nil {
+			return nil, nil, fmt.Errorf("next state invalid (%v)", *nextState)
+		}
 
-		output, next, err := m.States[*nextState].Execute(ctx, input)
+		output, next, err := s.Execute(ctx, input)
 
 		if err != nil {
 			return nil, nil, err
@@ -110,6 +113,12 @@ func (m *Branch) Execute(ctx workflow.Context, s ParallelState, input interface{
 		nextState = next
 		input = output
 	}
+}
+
+func (m *Branch) Tasks() []*TaskState {
+	var tasks []*TaskState
+	tasks = append(tasks, tasksFromStates(m.States)...)
+	return tasks
 }
 
 func (s *ParallelState) Validate() error {
