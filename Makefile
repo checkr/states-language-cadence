@@ -92,3 +92,22 @@ lint:
 .PHONY: docker
 docker:
 	docker build -t states-language-cadence -f Dockerfile .
+
+CADENCE_HOST := host.docker.internal:7933
+
+cadence-create-domain:
+	docker run \
+	--rm ubercadence/cli:master \
+	--address ${CADENCE_HOST} \
+	--domain samples-domain domain register \
+	--global_domain false
+
+run-trigger:
+	docker run \
+	--rm ubercadence/cli:master \
+	--address ${CADENCE_HOST} \
+	--domain samples-domain workflow run \
+	--tl WorkflowDemo \
+	--wt example:workflow:ExampleWorkflow \
+	--et 60 \
+	-i '{"example":"example"}'

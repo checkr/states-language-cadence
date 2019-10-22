@@ -1,7 +1,6 @@
 package aslworkflow
 
 import (
-	"github.com/checkr/states-language-cadence/pkg/aslmachine"
 	"go.uber.org/cadence"
 )
 
@@ -20,7 +19,7 @@ var failMachine = []byte(`
 `)
 
 func (s *UnitTestSuite) Test_Workflow_Fail_State() {
-	sm, err := aslmachine.FromJSON(failMachine)
+	sm, err := FromJSON(failMachine)
 	if err != nil {
 		s.NoError(err)
 		return

@@ -4,7 +4,6 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/checkr/states-language-cadence/pkg/aslmachine"
 	"go.uber.org/cadence/workflow"
 )
 
@@ -22,7 +21,7 @@ var taskMachine = []byte(`
 `)
 
 func (s *UnitTestSuite) Test_Workflow_Task_State() {
-	sm, err := aslmachine.FromJSON(taskMachine)
+	sm, err := FromJSON(taskMachine)
 	if err != nil {
 		s.NoError(err)
 		return
@@ -33,7 +32,7 @@ func (s *UnitTestSuite) Test_Workflow_Task_State() {
 		output := map[string]interface{}{"test": "example_output"}
 		return output, nil
 	}
-	aslmachine.RegisterHandler(handler)
+	RegisterHandler(handler)
 
 	exampleInput := map[string]interface{}{"test": "example_input"}
 
@@ -52,7 +51,7 @@ func (s *UnitTestSuite) Test_Workflow_Task_State() {
 }
 
 func (s *UnitTestSuite) Test_Workflow_Task_State_Error() {
-	sm, err := aslmachine.FromJSON(taskMachine)
+	sm, err := FromJSON(taskMachine)
 	if err != nil {
 		s.NoError(err)
 		return
@@ -62,7 +61,7 @@ func (s *UnitTestSuite) Test_Workflow_Task_State_Error() {
 		s.Equal("arn:aws:resource:example", resource)
 		return nil, errors.New("task error")
 	}
-	aslmachine.RegisterHandler(handler)
+	RegisterHandler(handler)
 
 	exampleInput := map[string]interface{}{"test": "example_input"}
 
@@ -75,13 +74,13 @@ func (s *UnitTestSuite) Test_Workflow_Task_State_Error() {
 }
 
 func (s *UnitTestSuite) Test_Workflow_Task_State_Missing() {
-	sm, err := aslmachine.FromJSON(taskMachine)
+	sm, err := FromJSON(taskMachine)
 	if err != nil {
 		s.NoError(err)
 		return
 	}
 
-	aslmachine.DeregisterHandler()
+	DeregisterHandler()
 
 	exampleInput := map[string]interface{}{"test": "example_input"}
 
@@ -93,7 +92,7 @@ func (s *UnitTestSuite) Test_Workflow_Task_State_Missing() {
 
 	err = s.env.GetWorkflowError()
 	if s.Error(err) {
-		s.True(strings.Contains(err.Error(), aslmachine.ErrTaskHandlerNotRegistered.Error()))
+		s.True(strings.Contains(err.Error(), ErrTaskHandlerNotRegistered.Error()))
 	}
 
 }

@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/checkr/states-language-cadence/pkg/aslmachine"
 	"go.uber.org/cadence/workflow"
 )
 
-func Workflow(ctx workflow.Context, sm aslmachine.StateMachine, input interface{}) (interface{}, error) {
+func Workflow(ctx workflow.Context, sm StateMachine, input interface{}) (interface{}, error) {
 	ao := workflow.ActivityOptions{
 		ScheduleToStartTimeout: time.Minute,
 		StartToCloseTimeout:    time.Minute,
@@ -20,7 +19,7 @@ func Workflow(ctx workflow.Context, sm aslmachine.StateMachine, input interface{
 	return output, err
 }
 
-func RegisterWorkflow(workflowName string, initStateMachine aslmachine.StateMachine) {
+func RegisterWorkflow(workflowName string, initStateMachine StateMachine) {
 	workflowFunc := func(ctx workflow.Context, input interface{}) (interface{}, error) {
 		// Create a local instance of state machine. Workflows that were started with a given machine
 		// will continue using that machine.
@@ -28,7 +27,7 @@ func RegisterWorkflow(workflowName string, initStateMachine aslmachine.StateMach
 			return initStateMachine
 		})
 
-		var sm aslmachine.StateMachine
+		var sm StateMachine
 		err := encodedStateMachine.Get(&sm)
 		if err != nil {
 			return nil, fmt.Errorf("failed to initialize the state machine: %w", err)

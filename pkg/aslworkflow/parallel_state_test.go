@@ -1,9 +1,5 @@
 package aslworkflow
 
-import (
-	"github.com/checkr/states-language-cadence/pkg/aslmachine"
-)
-
 var parallelMachine = []byte(`
 {
 	"StartAt": "Example1",
@@ -45,7 +41,7 @@ var parallelMachine = []byte(`
 func (s *UnitTestSuite) Test_Workflow_Parallel_State() {
 	workflowName := "TestParallelWorkflow"
 
-	sm, err := aslmachine.FromJSON(parallelMachine)
+	sm, err := FromJSON(parallelMachine)
 	if err != nil {
 		s.NoError(err)
 		return

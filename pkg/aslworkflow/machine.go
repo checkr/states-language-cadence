@@ -1,4 +1,4 @@
-package aslmachine
+package aslworkflow
 
 import (
 	"encoding/json"
@@ -123,7 +123,12 @@ func (m *StateMachine) Execute(ctx workflow.Context, input interface{}) (interfa
 	nextState := &m.StartAt
 
 	for {
-		output, next, err := m.States[*nextState].Execute(ctx, input)
+		s := m.States[*nextState]
+		if s == nil {
+			return nil, fmt.Errorf("next state invalid (%v)", *nextState)
+		}
+
+		output, next, err := s.Execute(ctx, input)
 
 		if err != nil {
 			return nil, err
@@ -135,5 +140,48 @@ func (m *StateMachine) Execute(ctx workflow.Context, input interface{}) (interfa
 
 		nextState = next
 		input = output
+	}
+}
+
+func tasksFromStates(states States) []*TaskState {
+	var tasks []*TaskState
+	for _, state := range states {
+		switch typeState := state.(type) {
+		case *TaskState:
+			tasks = append(tasks, typeState)
+		case *ParallelState:
+			parallelState := state.(*ParallelState)
+			for _, branch := range parallelState.Branches {
+				tasks = append(tasks, branch.Tasks()...)
+			}
+		}
+	}
+	return tasks
+}
+
+func (m *StateMachine) Tasks() []*TaskState {
+	var tasks []*TaskState
+	tasks = append(tasks, tasksFromStates(m.States)...)
+	return tasks
+}
+
+func (m *StateMachine) RegisterWorkflow(name string) {
+	RegisterWorkflow(name, *m)
+}
+
+// Keep track of registered activities so we don't register the same activity more than once
+var registeredActivities = map[string]bool{}
+
+func (m *StateMachine) RegisterActivities(activityFunc Activity) {
+	for _, task := range m.Tasks() {
+		resourceName := *task.Resource
+
+		// Check to see if this activity has already been registered, and skip if so
+		if registeredActivities[resourceName] {
+			continue
+		}
+
+		RegisterActivity(resourceName, activityFunc)
+		registeredActivities[resourceName] = true
 	}
 }
