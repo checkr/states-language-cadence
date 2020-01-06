@@ -1,8 +1,6 @@
 GO=go
 GO_BUILD_OPTS?=
 
-export GOPRIVATE=github.com/checkr
-
 # Test options. -count 1 disables test result caching.
 GO_TEST_OPTS?=-v --race -count 1
 
@@ -53,12 +51,6 @@ check-pg:
 	@(! which pg_isready || pg_isready -h localhost -p 5432) 2>&1 >/dev/null || \
 		(echo 'postgres not ready! run "docker-compose start" first.' && exit 1)
 
-# bring only the IDLs up to date.
-.PHONY: mod-update-idl
-mod-update-idl:
-	go get -u github.com/checkr/idl
-	make mod-vendor
-
 # update all dependencies.
 .PHONY: mod-update
 mod-update:
@@ -95,6 +87,7 @@ docker:
 
 CADENCE_HOST := host.docker.internal:7933
 
+.PHONY: cadence-create-domain
 cadence-create-domain:
 	docker run \
 	--rm ubercadence/cli:master \
@@ -102,6 +95,7 @@ cadence-create-domain:
 	--domain samples-domain domain register \
 	--global_domain false
 
+.PHONY: run-trigger
 run-trigger:
 	docker run \
 	--rm ubercadence/cli:master \
