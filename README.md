@@ -40,6 +40,12 @@ make mod-vendor
 
 An example command is provided in `cmd/workflow`. It should demenstrate how to use the framework and register workflows.
 
+#### Related projects
+
+Thanks to the folks at Amazon for designing the state machine spec, the folks at Coinbase for building an [implementation in Golang](https://github.com/coinbase/step) and the folks at Uber for building [Cadence](https://github.com/uber/cadence)
+
+---
+
 #### What is States Language?
 
 The operation of a state machine is specified by states, which are represented by JSON objects, fields in the top-level
